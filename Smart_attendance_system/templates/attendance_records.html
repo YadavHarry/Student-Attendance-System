@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Records - Smart Attendance System</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <!-- FileSaver.js and xlsx for export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- TableExport.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tableexport/5.2.0/js/tableexport.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <img src="../Website_Images/Photoroom.png" alt="College Logo" width="230" height="200">
+            <h1>Smart Attendance System using Face Recognition</h1>
+            <nav class="main-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/add_student" class="nav-link">Add New Student</a>
+                <a href="/attendance_records" class="nav-link active">View Attendance Records</a>
+            </nav>
+        </header>
+
+        <div class="panel attendance-panel">
+            <h2>Attendance Records</h2>
+            <button id="refresh-attendance" class="btn primary">Refresh Records</button>
+            <div id="attendance-records" class="attendance-container">
+                <!-- Attendance records will be loaded here -->
+                <p>Click "Refresh Records" to load attendance data.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <footer>
+        <div class="footer" style="text-align: center;">
+            <p>Creator: <i>Harry_Yadav</i> | PRN: 22358020076</p>
+        </div>
+    </footer>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const refreshAttendanceButton = document.getElementById('refresh-attendance');
+            const attendanceRecordsDiv = document.getElementById('attendance-records');
+
+            // Refresh Attendance Records Handler
+            refreshAttendanceButton.addEventListener('click', function () {
+                fetch('/get_attendance')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            displayAttendanceRecords(data.data);
+                        } else {
+                            attendanceRecordsDiv.innerHTML = `<p>Error: ${data.message}</p>`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        attendanceRecordsDiv.innerHTML = '<p>Failed to fetch attendance records.</p>';
+                    });
+            });
+
+            // Function to display attendance records
+            function displayAttendanceRecords(data) {
+                if (Object.keys(data).length === 0) {
+                    attendanceRecordsDiv.innerHTML = '<p>No attendance records found.</p>';
+                    return;
+                }
+
+                let html = '<div class="lecture-tabs">';
+
+                // Create tabs for each lecture
+                Object.keys(data).forEach((lecture, index) => {
+                    html += `<div class="lecture-tab ${index === 0 ? 'active' : ''}" data-lecture="${lecture}">${lecture}</div>`;
+                });
+
+                html += '</div>';
+
+                // Create tables for each lecture
+                Object.keys(data).forEach((lecture, index) => {
+                    const records = data[lecture];
+
+                    html += `<div class="lecture-content" id="lecture-${lecture}" style="${index === 0 ? '' : 'display: none;'}">`;
+                    html += `<h3>${lecture} - ${records.length} Records</h3>`;
+
+                    if (records.length === 0) {
+                        html += '<p>No attendance records for this lecture.</p>';
+                    } else {
+                        html += `
+                            <div class="attendance-table-container">
+                                <table class="attendance-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Date & Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+
+                        records.forEach(record => {
+                            html += `
+                                <tr>
+                                    <td>${record.name}</td>
+                                    <td>${record.timestamp}</td>
+                                </tr>
+                            `;
+                        });
+
+                        html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    }
+
+                    html += '</div>';
+                });
+
+                attendanceRecordsDiv.innerHTML = html;
+
+                // Add event listeners for tabs
+                document.querySelectorAll('.lecture-tab').forEach(tab => {
+                    tab.addEventListener('click', function () {
+                        const lecture = this.getAttribute('data-lecture');
+
+                        // Hide all content sections
+                        document.querySelectorAll('.lecture-content').forEach(content => {
+                            content.style.display = 'none';
+                        });
+
+                        // Show the selected lecture's content
+                        document.getElementById(`lecture-${lecture}`).style.display = 'block';
+
+                        // Update active tab
+                        document.querySelectorAll('.lecture-tab').forEach(t => {
+                            t.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                    });
+                });
+            }
+
+            // Load attendance records on page load
+            refreshAttendanceButton.click();
+        });
+    </script>
+</body>
+
+</html>

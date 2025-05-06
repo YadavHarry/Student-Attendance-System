@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Student - Smart Attendance System</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <img src="../Website_Images/Photoroom.png" alt="College Logo" width="230" height="200">
+            <h1>Smart Attendance System using Face Recognition</h1>
+            <nav class="main-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/add_student" class="nav-link active">Add New Student</a>
+                <a href="/attendance_records" class="nav-link">View Attendance Records</a>
+            </nav>
+        </header>
+
+        <div class="panel">
+            <h2>Add New Student</h2>
+            <div class="add-student-form">
+                <div class="input-group">
+                    <label for="person-name">Student Name:</label>
+                    <input type="text" id="person-name" placeholder="Enter student name">
+                </div>
+                <div class="input-group">
+                    <label for="person-image">Student Photo:</label>
+                    <input type="file" id="person-image" accept="image/*">
+                    <p class="help-text">Please upload a clear front-facing photo of the student's face.</p>
+                </div>
+                <div class="camera-preview">
+                    <h3>Preview:</h3>
+                    <div class="preview-container">
+                        <img id="image-preview" src="{{ url_for('static', filename='images/placeholder.png') }}"
+                            alt="Preview">
+                    </div>
+                </div>
+                <button id="upload-image" class="btn primary">Add Student</button>
+                <p id="status-message" class="status-message"></p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Registered Students</h2>
+            <button id="refresh-students" class="btn secondary">Refresh List</button>
+            <div id="students-list" class="students-grid">
+                <!-- Student list will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer" style="text-align: center;">
+            <p>Creator: <i>Harry_Yadav</i> | PRN: 22358020076</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const personNameInput = document.getElementById('person-name');
+            const personImageInput = document.getElementById('person-image');
+            const imagePreview = document.getElementById('image-preview');
+            const uploadImageButton = document.getElementById('upload-image');
+            const statusMessage = document.getElementById('status-message');
+            const refreshStudentsButton = document.getElementById('refresh-students');
+            const studentsList = document.getElementById('students-list');
+
+            // Preview the image before upload
+            personImageInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Upload student image
+            uploadImageButton.addEventListener('click', function () {
+                const name = personNameInput.value.trim();
+                const imageFile = personImageInput.files[0];
+
+                if (!name) {
+                    alert('Please enter a student name.');
+                    return;
+                }
+
+                if (!imageFile) {
+                    alert('Please select an image file.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('image', imageFile);
+
+                statusMessage.textContent = 'Uploading and training...';
+                statusMessage.style.color = 'blue';
+
+                fetch('/upload_image', {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            statusMessage.textContent = data.message;
+                            statusMessage.style.color = 'green';
+                            personNameInput.value = '';
+                            personImageInput.value = '';
+                            imagePreview.src = "{{ url_for('static', filename='images/placeholder.png') }}";
+                            loadStudentList(); // Refresh the student list
+                        } else {
+                            statusMessage.textContent = 'Error: ' + data.message;
+                            statusMessage.style.color = 'red';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        statusMessage.textContent = 'Connection Error';
+                        statusMessage.style.color = 'red';
+                    });
+            });
+
+            // Load student list
+            function loadStudentList() {
+                fetch('/get_student_list')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            if (data.data.length === 0) {
+                                studentsList.innerHTML = '<p>No students registered yet.</p>';
+                            } else {
+                                let html = '<div class="student-grid">';
+                                data.data.forEach(student => {
+                                    html += `
+                                        <div class="student-card">
+                                            <img src="{{ url_for('static', filename='') }}${student.image}" alt="${student.name}">
+                                            <p>${student.name}</p>
+                                        </div>
+                                    `;
+                                });
+                                html += '</div>';
+                                studentsList.innerHTML = html;
+                            }
+                        } else {
+                            studentsList.innerHTML = `<p>Error: ${data.message}</p>`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        studentsList.innerHTML = '<p>Failed to fetch student list.</p>';
+                    });
+            }
+
+            refreshStudentsButton.addEventListener('click', loadStudentList);
+
+            // Load student list on page load
+            loadStudentList();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Capture Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .video-container {
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #videoElement {
+            width: 640px;
+            height: 480px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Face Capture Test</h1>
+
+        <div class="video-container">
+            <img id="videoElement" src="{{ url_for('video_feed') }}" alt="Video Stream">
+        </div>
+
+        <div class="controls">
+            <button id="captureBtn">Capture</button>
+            <input type="text" id="studentName" placeholder="Enter student name">
+            <button id="saveBtn" disabled>Save Image</button>
+        </div>
+
+        <div id="statusMessage" class="status hidden"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const captureBtn = document.getElementById('captureBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const studentName = document.getElementById('studentName');
+            const statusMessage = document.getElementById('statusMessage');
+
+            let imageCaptured = false;
+
+            // Capture button click event
+            captureBtn.addEventListener('click', function () {
+                fetch('/capture', {
+                    method: 'POST',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            imageCaptured = true;
+                            saveBtn.disabled = false;
+                            showStatus('Image captured! Enter a name and click Save.', 'success');
+                        } else {
+                            showStatus('Failed to capture image: ' + data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        showStatus('Error: ' + error, 'error');
+                    });
+            });
+
+            // Save button click event
+            saveBtn.addEventListener('click', function () {
+                const name = studentName.value.trim();
+
+                if (!name) {
+                    showStatus('Please enter a student name', 'error');
+                    return;
+                }
+
+                if (!imageCaptured) {
+                    showStatus('Please capture an image first', 'error');
+                    return;
+                }
+
+                fetch('/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: name }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            showStatus('Success: ' + data.message, 'success');
+                            // Reset for next capture
+                            imageCaptured = false;
+                            saveBtn.disabled = true;
+                            studentName.value = '';
+                        } else {
+                            showStatus('Error: ' + data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        showStatus('Error: ' + error, 'error');
+                    });
+            });
+
+            // Helper function to show status messages
+            function showStatus(message, type) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status ' + type;
+                statusMessage.classList.remove('hidden');
+
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    statusMessage.classList.add('hidden');
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+
+</html>

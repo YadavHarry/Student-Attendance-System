@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Attendance System using Face Recognition</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <style>
+        .user-info {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .user-info .username {
+            margin-right: 15px;
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            padding: 6px 12px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .add-lecture-form {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .add-lecture-form input {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .add-lecture-form button {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="user-info">
+            <span class="username">Admin</span>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+
+        <header>
+            <img src="../Website_Images/Photoroom.png" alt="College Logo" width="230" height="200">
+            <h1>Smart Attendance System using Face Recognition</h1>
+            <nav class="main-nav">
+                <a href="/" class="nav-link active">Home</a>
+                <a href="/add_student" class="nav-link">Add New Student</a>
+                <a href="/attendance_records" class="nav-link">View Attendance Records</a>
+            </nav>
+        </header>
+
+        <div class="main-content">
+            <div class="panel control-panel">
+                <h2>Control Panel</h2>
+                <div class="input-group">
+                    <label for="lecture-select">Select Lecture:</label>
+                    <select id="lecture-select" class="lecture-dropdown">
+                        <option value="">-- Select a Lecture --</option>
+                        {% for lecture in lectures %}
+                        <option value="{{ lecture }}">{{ lecture }}</option>
+                        {% endfor %}
+                    </select>
+                    <button id="set-lecture" class="btn primary">Set Lecture</button>
+                </div>
+
+                <div class="input-group">
+                    <label>Add New Lecture:</label>
+                    <div class="add-lecture-form">
+                        <input type="text" id="new-lecture-name" placeholder="Enter new lecture name">
+                        <button id="add-lecture-btn" class="btn secondary">Add Lecture</button>
+                    </div>
+                </div>
+
+                <div class="status-display">
+                    <p>Current Lecture: <span id="lecture-display">Not Set</span></p>
+                    <p>Status: <span id="status-message">Waiting for lecture to be set</span></p>
+                </div>
+            </div>
+
+            <div class="panel camera-panel">
+                <h2>Live Camera Feed</h2>
+                <div class="video-container">
+                    <img id="video-feed" src="{{ url_for('video_feed') }}" alt="Camera Feed">
+                </div>
+            </div>
+        </div>
+
+        <div class="panel student-panel">
+            <h2>Current Student Information</h2>
+            <div class="student-info-display">
+                <div class="student-image-container">
+                    <img id="student-image" src="{{ url_for('static', filename='images/placeholder.png') }}"
+                        alt="Student Image">
+                </div>
+                <div class="student-details">
+                    <p>Name: <span id="student-name">-</span></p>
+                    <p>Time: <span id="attendance-time">-</span></p>
+                    <p>Attendance recorded for: <span id="attendance-lecture">-</span></p>
+                </div>
+            </div>
+            <div class="notification-box">
+                <p>Attendance Notification is sent on Email. Please Check your Email (spam)</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer">
+            <p>Creator: <i>Harry_Yadav</i> | PRN: 22358020076</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const lectureSelect = document.getElementById('lecture-select');
+            const setLectureButton = document.getElementById('set-lecture');
+            const lectureDisplay = document.getElementById('lecture-display');
+            const statusMessage = document.getElementById('status-message');
+            const studentName = document.getElementById('student-name');
+            const studentImage = document.getElementById('student-image');
+            const attendanceTime = document.getElementById('attendance-time');
+            const attendanceLecture = document.getElementById('attendance-lecture');
+            const newLectureName = document.getElementById('new-lecture-name');
+            const addLectureBtn = document.getElementById('add-lecture-btn');
+
+            // Set Lecture button click handler
+            setLectureButton.addEventListener('click', function () {
+                const lectureName = lectureSelect.value;
+
+                if (!lectureName) {
+                    alert('Please select a lecture.');
+                    return;
+                }
+
+                fetch('/set_lecture', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ lecture_name: lectureName }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            lectureDisplay.textContent = lectureName;
+                            attendanceLecture.textContent = lectureName;
+                            statusMessage.textContent = 'Active - Recording Attendance';
+                            statusMessage.style.color = 'green';
+                            alert('Lecture set successfully!');
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Connection Error');
+                    });
+            });
+
+            // Add new lecture button click handler
+            addLectureBtn.addEventListener('click', function () {
+                const lectureName = newLectureName.value.trim();
+
+                if (!lectureName) {
+                    alert('Please enter a lecture name.');
+                    return;
+                }
+
+                fetch('/add_new_lecture', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ lecture_name: lectureName }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert(data.message);
+                            newLectureName.value = '';
+
+                            // Add the new lecture to the dropdown
+                            const option = document.createElement('option');
+                            option.value = lectureName;
+                            option.textContent = lectureName;
+                            lectureSelect.appendChild(option);
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Connection Error');
+                    });
+            });
+
+            // Function to update student info when attendance is marked
+            function updateStudentInfo() {
+                fetch('/get_latest_attendance')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success' && data.name) {
+                            studentName.textContent = data.name;
+                            attendanceTime.textContent = data.time;
+
+                            if (data.image) {
+                                studentImage.src = "{{ url_for('static', filename='') }}" + data.image;
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+
+            // Check for updates every 5 seconds
+            setInterval(updateStudentInfo, 5000);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,442 @@
+/* static/css/styles.css */
+:root {
+    --primary-color: #2d2222;
+    --secondary-color: #50c878;
+    --dark-color: #2c3e50;
+    --light-color: #f8f9fa;
+    --danger-color: #e74c3c;
+    --text-color: #333;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #90a7b6;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    padding: 20px 0;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+}
+
+.main-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.panel {
+    background-color: white;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.control-panel {
+    flex: 1;
+    min-width: 300px;
+}
+
+.camera-panel {
+    flex: 2;
+    min-width: 400px;
+}
+
+.attendance-panel {
+    width: 100%;
+}
+
+h2 {
+    color: var(--dark-color);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+}
+
+h3 {
+    color: var(--dark-color);
+    margin: 20px 0 10px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-top: 5px;
+}
+
+.primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.primary:hover {
+    background-color: #3a7bc8;
+}
+
+.secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.secondary:hover {
+    background-color: #40b868;
+}
+
+.status-display {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f1f1f1;
+    border-radius: var(--border-radius);
+}
+
+.status-display p {
+    margin-bottom: 10px;
+}
+
+.status-display span {
+    font-weight: bold;
+}
+
+.video-container {
+    width: 100%;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background-color: #000;
+}
+
+#video-feed {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.attendance-table-container {
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.attendance-table th,
+.attendance-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.attendance-table th {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.attendance-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.lecture-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.lecture-tab {
+    padding: 8px 15px;
+    background-color: #e9ecef;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.lecture-tab.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .control-panel,
+    .camera-panel {
+        width: 100%;
+    }
+}
+
+/* Add these styles to your styles.css file */
+
+.main-nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--dark-color);
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+}
+
+.nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.student-info-display {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.student-image-container {
+    width: 200px;
+    height: 200px;
+    border: 2px solid #ddd;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+}
+
+.student-image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.student-details {
+    flex: 1;
+}
+
+.student-details p {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.notification-box {
+    background-color: #e8f4ff;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-top: 20px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.preview-container {
+    width: 200px;
+    height: 200px;
+    border: 2px solid #ddd;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin: 15px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.preview-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.help-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+.status-message {
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+.student-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.student-card {
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.student-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow);
+}
+
+.student-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.student-card p {
+    padding: 10px;
+    text-align: center;
+    font-weight: 500;
+    background-color: #f8f9fa;
+    margin: 0;
+}
+
+.attendance-container {
+    margin-top: 20px;
+}
+
+.lecture-content {
+    margin-top: 15px;
+}
+
+/* Responsive adjustments for student info and image */
+@media (max-width: 768px) {
+    .student-info-display {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .student-image-container {
+        width: 150px;
+        height: 150px;
+    }
+
+    .student-details {
+        text-align: center;
+    }
+
+    .student-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}
+.footer {
+    /* position: fixed; */
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    /* background-color: red; */
+    color: rgb(8, 7, 7);
+    text-align: center;
+    font-family:  Georgia, Times, 'Times New Roman', serif;
+    font-style: italic;
+    font-weight: bold;
+ }
+
+
+ /* new from here  27/04/2025 */
+ /* Tab Navigation */
+.tab-nav {
+    display: flex;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+    margin-right: 5px;
+    border-radius: 5px 5px 0 0;
+}
+
+.tab-btn:hover {
+    background-color: #ddd;
+}
+
+.tab-btn.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+    padding: 15px 0;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Video Container */
+.video-container {
+    margin-bottom: 15px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#videoElement {
+    width: 100%;
+    max-height: 300px;
+    display: block;
+}
