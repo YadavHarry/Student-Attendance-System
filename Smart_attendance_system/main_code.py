@@ -26,7 +26,7 @@ CONFIDENCE_THRESHOLD = 70  # Below this value is considered a good match
 
 # Email configuration
 EMAIL_ADDRESS = "hy66331@gmail.com"
-EMAIL_PASSWORD = "reqq bsve rvbx wztn"
+EMAIL_PASSWORD = "xxxxxxxxxxxxxxxx"
 TO_EMAIL = "siddhipawar2102@gmail.com"
 
 # Function to prepare the training data (images)
