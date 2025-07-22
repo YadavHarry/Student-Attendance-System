@@ -26,7 +26,7 @@ latest_attendance = {"name": None, "time": None, "image": None}
 
 # Email configuration
 EMAIL_ADDRESS = "hy66331@gmail.com"
-EMAIL_PASSWORD = "reqq bsve rvbx wztn"
+EMAIL_PASSWORD = "xxxxxxxxxxxxxxx"
 TO_EMAIL = "siddhipawar2102@gmail.com"
 
 # Confidence threshold for unknown detection
