@@ -29,7 +29,7 @@ latest_attendance = {"name": None, "time": None, "image": None}
 
 # Email configuration
 EMAIL_ADDRESS = "hy66331@gmail.com"
-EMAIL_PASSWORD = "reqq bsve rvbx wztn"
+EMAIL_PASSWORD = "xxxxxxxxxxxxxx"
 TO_EMAIL = "siddhipawar2102@gmail.com"
 
 # Admin credentials (for simplicity, this is hardcoded; in production, use hashed passwords)
